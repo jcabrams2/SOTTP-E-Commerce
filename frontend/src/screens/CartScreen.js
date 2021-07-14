@@ -1,5 +1,5 @@
 import { getProduct } from "../api";
-import { parseRequestUrl } from "../utils";
+import { parseRequestUrl, rerender } from "../utils";
 import { getCartItems, setCartItems } from "./localStorage";
 
 
@@ -12,10 +12,22 @@ const addToCart = (item, forceUpdate = false) => {
     } else {
         cartItems = [...cartItems, item];
     }
+    if(forceUpdate) {
+        rerender(CartScreen)
+    }
     setCartItems(cartItems);
 };
 const CartScreen = {
-    after_render:()=>{},
+    after_render:()=>{
+        const qtySelects = document.getElementsByClassName("qty-select")
+        Array.from(qtySelects).forEach(qtySelect =>{
+            qtySelect.addEventListener('change', (e) =>{
+                const item = getCartItems().find((x) => x.product === qtySelect.id);
+                addToCart({...item, qty: Number(e.target.value) }, false);
+            });
+        });
+
+    },
     
     render: async() => {
         const request = parseRequestUrl();
@@ -32,7 +44,7 @@ const CartScreen = {
         }
         const cartItems = getCartItems();
         return `
-        <div class="cart">
+        <div class="content cart">
             <div class="cart-list">
                 <ul class="cart-list-container">
                     <li>
@@ -56,7 +68,12 @@ const CartScreen = {
                                 <div>
                                     Qty: 
                                     <select class="qty-select" id="${item.product}">
-                                        <option value="1">1</option>
+                                        ${
+                                            [...Array(item.countInStock).keys()].map(x => item.qty === x+1
+                                                ?`<option selected value="${x+1}">${x+1}</option>`
+                                                :`<option value="${x + 1}">${x + 1}</option>`
+                                                )
+                                        }
                                     </select>
                                     <button type="button" class="delete-button" id="${item.product}">
                                     Delete

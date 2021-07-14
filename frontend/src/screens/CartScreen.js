@@ -5,28 +5,47 @@ import { getCartItems, setCartItems } from "./localStorage";
 
 const addToCart = (item, forceUpdate = false) => {
     let cartItems = getCartItems();
-    const existItem = cartItems.find(x => x.product === item.product);
+    const existItem = cartItems.find((x) => x.product === item.product);
     if(existItem){
-        cartItems = cartItems.map((x) => x.product === existItem.product? item: x
+        if(forceUpdate){
+        cartItems = cartItems.map((x) => 
+        x.product === existItem.product? item: x
         );
+        }
     } else {
         cartItems = [...cartItems, item];
     }
+    setCartItems(cartItems);
     if(forceUpdate) {
         rerender(CartScreen)
+    } 
+};
+const removeFromCart = (id) =>{
+    setCartItems(getCartItems().filter((x) => x.product !== id));
+    if(id === parseRequestUrl().id){
+        document.location.hash = '/cart';
+    } else {
+        rerender(CartScreen);
     }
-    setCartItems(cartItems);
 };
 const CartScreen = {
     after_render:()=>{
         const qtySelects = document.getElementsByClassName("qty-select")
         Array.from(qtySelects).forEach(qtySelect =>{
             qtySelect.addEventListener('change', (e) =>{
-                const item = getCartItems().find((x) => x.product === qtySelect.id);
-                addToCart({...item, qty: Number(e.target.value) }, false);
+                const item = getCartItems().find(x => x.product === qtySelect.id);
+                addToCart({...item, qty: Number(e.target.value) }, true);
             });
         });
-
+        const deleteButtons = document.getElementsByClassName('delete-button');
+        Array.from(deleteButtons).forEach((deleteButton)=>{
+            deleteButton.addEventListener('click', () =>{
+                removeFromCart(deleteButton.id);
+            });
+        });
+        document.getElementById("checkout-button").addEventListener("click", () => {
+            document.location.hash = '/signin'
+        })
     },
     
     render: async() => {

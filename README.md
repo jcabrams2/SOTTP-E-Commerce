@@ -194,4 +194,24 @@
     2.  render email and password fields
     3.  style signin form
 
-21. 
+21. Sign-in Screen Backend
+    1.  create signin api in backend
+    2.  create route for /api/users/signin
+    3.  create check user name and password
+    4.  if it is not ok the return 401 error
+    5.  create check user name and password
+    6.  if it is not ok then return 401 error
+    7.  install express-async-handler
+    8.  wrap it in expressAsyncHandler
+    9.  add error middleware in server.js
+    10. install Postman
+    11. send post request
+    12. test with invalid user password
+    13. otherwise generate token 
+    14. install jsonwebtoken
+    15. set config.JWT_SECRET to somethingsecret
+    16. add generateToken to utils.js
+    17. return token
+    18. test with correct user and password
+
+

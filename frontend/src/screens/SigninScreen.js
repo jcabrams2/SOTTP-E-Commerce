@@ -1,5 +1,5 @@
 import { signin } from "../api";
-import { hideLoading, showMessage } from "../utils";
+import { hideLoading, redirectUser, showLoading, showMessage } from "../utils";
 import { getUserInfo, setUserInfo } from "./localStorage";
 
 const SigninScreen = {
@@ -8,6 +8,7 @@ const SigninScreen = {
         .getElementById('signin-form')
         .addEventListener('submit', async (e) => {
             e.preventDefault();
+            showLoading();
             const data = await signin({
                 email: document.getElementById('email').value,
                 password: document.getElementById('password').value,
@@ -17,13 +18,13 @@ const SigninScreen = {
                 showMessage(data.error);
             } else {
                 setUserInfo(data);
-                document.location.hash = '/';
+                redirectUser();
             }
         });
     },
     render: () =>{
         if(getUserInfo().name) {
-            document.location.hash = '/';
+            redirectUser();
         }
         return `
         <div class="form-container">

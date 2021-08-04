@@ -1,5 +1,5 @@
 import { register } from "../api";
-import { hideLoading, showMessage } from "../utils";
+import { hideLoading, redirectUser, showLoading, showMessage } from "../utils";
 import { getUserInfo, setUserInfo } from "./localStorage";
 
 const RegisterScreen = {
@@ -8,6 +8,7 @@ const RegisterScreen = {
         .getElementById('register-form')
         .addEventListener('submit', async (e) => {
             e.preventDefault();
+            showLoading();
             const data = await register({
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
@@ -18,13 +19,13 @@ const RegisterScreen = {
                 showMessage(data.error);
             } else {
                 setUserInfo(data);
-                document.location.hash = '/';
+                redirectUser();
             }
         });
     },
     render: () =>{
         if(getUserInfo().name) {
-            document.location.hash = '/';
+            redirectUser();
         }
         return `
         <div class="form-container">
